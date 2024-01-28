@@ -1,0 +1,18 @@
+services:
+  postgresql:
+      image: ankane/pgvector
+      ports:
+        - 5432:5432
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: postgres
+        PG_MAJOR: 15
+  
+  pgadmin:
+      image: dpage/pgadmin4
+      ports:
+        - 5050:80
+      environment:
+        PGADMIN_DEFAULT_EMAIL: tomas@tomas.com 
+        PGADMIN_DEFAULT_PASSWORD: 123
