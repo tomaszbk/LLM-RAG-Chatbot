@@ -19,6 +19,7 @@ ANSWER:
 """
 
 prompt_without_context_template = """Answer only the following QUESTION.
+do not continue the conversation further.
 
 QUESTION:
 {question}

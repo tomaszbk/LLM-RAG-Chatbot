@@ -8,5 +8,5 @@ def get_conversational_answer(question: str, prompt_template: str, context:str =
     input_text = prompt_template.format(context=context, question=question)
     input_ids = tokenizer.encode(input_text, return_tensors="pt")
     outputs = model.generate(input_ids, max_new_tokens=500)
-    answer = tokenizer.decode(outputs[0])
+    answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return answer
