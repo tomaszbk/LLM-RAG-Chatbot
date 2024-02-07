@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 func mergeSort(arr []int) []int {
 	n := len(arr)
 	if n <= 1 {
@@ -69,13 +67,4 @@ func min(a, b int) int {
 		return a
 	}
 	return b
-}
-
-func main() {
-	arr := []int{9, 5, 2, 7, 6}
-	fmt.Println("Before sorting:", arr)
-
-	arr = mergeSort(arr)
-
-	fmt.Println("After sorting:", arr)
 }

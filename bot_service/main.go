@@ -132,7 +132,7 @@ func LlmPostRequest(prompt string) (string, error) {
 }
 
 func doRanking(s *discordgo.Session, ChannelID string) {
-	arr := []int{9, 5, 1, 3, 8, 4, 2, 7, 6}
+	arr := []int{9, 7, 6}
 	n := len(arr)
 
 	temp := make([]int, n)
