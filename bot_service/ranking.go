@@ -72,7 +72,7 @@ func min(a, b int) int {
 }
 
 func main() {
-	arr := []int{9, 5, 1, 3, 8, 4, 2, 7, 6}
+	arr := []int{9, 5, 2, 7, 6}
 	fmt.Println("Before sorting:", arr)
 
 	arr = mergeSort(arr)
