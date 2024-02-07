@@ -11,7 +11,10 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+	"ranking"
 )
+
+rankingMode := false
 
 func main() {
 
@@ -32,7 +35,6 @@ func main() {
 
 	ds_bot.Identify.Intents = discordgo.IntentsAllWithoutPrivileged
 
-	// Open a connection to Discord
 	err = ds_bot.Open()
 	if err != nil {
 		fmt.Println("Error opening connection to Discord:", err)
@@ -45,7 +47,6 @@ func main() {
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
-
 	ds_bot.Close()
 }
 
@@ -55,20 +56,36 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	if rankingMode{
+
+	}
+
+
 	fmt.Printf("[%s] (Channel: %s) %s: %s\n", m.GuildID, m.ChannelID, m.Author.Username, m.Content)
 	message := m.Content
+	fmt.Printf("Message: %s.\n", message[:9])
+
 	if len(message) < 9 {
 		return
-	}
-	fmt.Printf("Message: %s.\n", message[:9])
-	if message[:9] == "!kukebot " {
-		fmt.Println("Processing prompt")
-		croppedMessage := message[9:]
-		promptAnswer, err := LlmPostRequest(croppedMessage)
-		if err != nil {
-			fmt.Println("Error processing prompt: ", err)
-		} else {
-			s.ChannelMessageSend(m.ChannelID, promptAnswer)
+	} else{
+
+
+		if message[:9] == "!kukebot " {
+			if message[9:] == "ranking" {
+				rankingMode = true
+				s.ChannelMessageSend(m.ChannelID, "Ranking mode enabled")
+				
+			}
+			else{
+				fmt.Println("Processing prompt")
+				croppedMessage := message[9:]
+				promptAnswer, err := LlmPostRequest(croppedMessage)
+				if err != nil {
+					fmt.Println("Error processing prompt: ", err)
+				} else {
+					s.ChannelMessageSend(m.ChannelID, promptAnswer)
+				}
+			}
 		}
 
 	}
