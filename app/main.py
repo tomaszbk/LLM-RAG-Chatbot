@@ -6,10 +6,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from loguru import logger
 from pypdf import PdfReader
 
-from app.infrastructure.document_db import insert_document
-from app.infrastructure.vector_db import store_embedding, vector_db_session_factory
+from app.infrastructure.document_db import get_session, insert_document
+from app.infrastructure.vector_db import store_embedding
 from app.schemas import Prompt
-from app.services.chatbot import generate_bot_answer
+from app.services.chatbot import generate_conversational_answer
 from app.services.embedding_model import get_sentence_embedding
 
 app = FastAPI()
@@ -21,19 +21,21 @@ text_splitter = RecursiveCharacterTextSplitter(
 
 
 @app.post("/submit-prompt-rag")
-def generate_rag_answer(prompt: Prompt, session=Depends(vector_db_session_factory.get_session)):
+def generate_rag_answer(prompt: Prompt, session=Depends(get_session)):
     logger.info("PROMPT:", prompt.prompt)
-    return generate_bot_answer(prompt.prompt, use_rag=True, session=session)
+    return generate_conversational_answer(prompt.prompt, use_rag=True, session=session)
 
 
 @app.post("/submit-prompt")
-def generate_answer(prompt: Prompt, session=Depends(vector_db_session_factory.get_session)):
+def generate_answer(prompt: Prompt, session=Depends(get_session)):
     logger.info("PROMPT:", prompt.prompt)
-    return generate_bot_answer(prompt.prompt, use_rag=False, session=session)
+    return generate_conversational_answer(prompt.prompt, use_rag=False, session=session)
 
 
 @app.post("/pdf-document")
 async def submit_pdf_document(file: UploadFile = File(...)):
+    filename = "pdf_document" if file.filename is None else file.filename
+
     contents = await file.read()
     file_like_object = io.BytesIO(contents)
     pdf_reader = PdfReader(file_like_object)
@@ -41,7 +43,7 @@ async def submit_pdf_document(file: UploadFile = File(...)):
     chunks = text_splitter.split_text(pdf_content)
     for i, chunk in enumerate(chunks):
         chunk = chunk.replace("\n", " ")
-        id = insert_document(title=file.filename + f"-{i}", content=chunk)
+        id = insert_document(title=filename + f"-{i}", content=chunk)
         embedding = get_sentence_embedding(chunk)
         store_embedding(embedding, str(id))
     return {"message": "Document submitted successfully"}

@@ -110,7 +110,7 @@ func LlmPostRequest(prompt string) (string, error) {
 		return "", err
 	}
 
-	resp, err := http.Post("http://localhost:8000/submit_prompt", "application/json", bytes.NewBuffer(jsonData))
+	resp, err := http.Post("http://localhost:8000/submit-prompt-rag", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", err
 	}
