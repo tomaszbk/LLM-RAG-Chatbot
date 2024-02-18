@@ -1,10 +1,16 @@
 package main
 
-func mergeSort(arr []int) []int {
+import (
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/bwmarrin/discordgo"
+)
+
+func doRanking(s *discordgo.Session, ChannelID string) {
+	arr := []int{9, 7, 6}
 	n := len(arr)
-	if n <= 1 {
-		return arr
-	}
 
 	temp := make([]int, n)
 	copy(temp, arr)
@@ -14,14 +20,21 @@ func mergeSort(arr []int) []int {
 			mid := min(leftStart+currSize-1, n-1)
 			rightEnd := min(leftStart+2*currSize-1, n-1)
 
-			merge(temp, leftStart, mid, rightEnd)
+			merge(temp, leftStart, mid, rightEnd, s, ChannelID)
 		}
 	}
 
-	return temp
+	strSlice := make([]string, len(temp))
+	for i, num := range temp {
+		strSlice[i] = strconv.Itoa(num)
+	}
+
+	result := strings.Join(strSlice, ", ")
+	s.ChannelMessageSend(ChannelID, result)
+	rankingMode = false
 }
 
-func merge(arr []int, leftStart, mid, rightEnd int) {
+func merge(arr []int, leftStart, mid, rightEnd int, s *discordgo.Session, ChannelID string) {
 	leftSize := mid - leftStart + 1
 	rightSize := rightEnd - mid
 
@@ -39,7 +52,11 @@ func merge(arr []int, leftStart, mid, rightEnd int) {
 	i, j, k := 0, 0, leftStart
 
 	for i < leftSize && j < rightSize {
-		if left[i] <= right[j] {
+		votesOne = 0
+		votesTwo = 0
+		s.ChannelMessageSend(ChannelID, "Which is better? "+strconv.Itoa(left[i])+" or "+strconv.Itoa(right[j])+"?")
+		time.Sleep(6 * time.Second)
+		if votesOne <= votesTwo {
 			arr[k] = left[i]
 			i++
 		} else {
