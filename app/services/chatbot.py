@@ -1,9 +1,9 @@
+from loguru import logger
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+
 from app.services.conversational_model import get_conversational_answer
 from app.services.embedding_model import get_sentence_embedding
-from loguru import logger
-
 
 prompt_with_context_template = """Answer only the following QUESTION based on the CONTEXT given.
 do not continue the conversation further.
