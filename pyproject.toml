@@ -14,8 +14,44 @@ fastapi = "^0.109.0"
 sqlalchemy = "^2.0.25"
 psycopg2 = "^2.9.9"
 loguru = "^0.7.2"
+python-multipart = "^0.0.9"
+langchain = "^0.1.7"
+pypdf = "^4.0.1"
+chromadb = "^0.4.22"
+sqlmodel = "^0.0.16"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.ruff]
+lint.select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "C",   # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "I",
+    "SIM",
+    "UP",
+]
+
+
+line-length = 100
+
+lint.ignore = [
+    "E501", # line too long, handled by format
+    "B008", # do not perform function calls in argument defaults
+    "F401",
+]
+fix = true
+show-fixes = true
+
+
+# [tool.pytest.ini_options]
+# python_files ="test*.py"
+# testpaths = [
+#     "tests"
+# ]
