@@ -96,19 +96,19 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
+type LlmPayload struct {
+	Prompt string `json:"prompt"`
+}
+
 func LlmPostRequest(prompt string) (string, error) {
-	// jsonData, err := json.Marshal(map[string]string{"prompt": prompt})
-	jsonData, err := json.Marshal(map[string]string{"prompt": prompt})
+	payload := &LlmPayload{Prompt: prompt}
+	jsonData, err := json.Marshal(payload)
 
 	if err != nil {
 		return "", err
 	}
 
 	// err = os.WriteFile("output.json", jsonData, 0644)
-
-	if err != nil {
-		return "", err
-	}
 
 	resp, err := http.Post("http://localhost:8000/submit-prompt-rag", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -124,6 +124,11 @@ func LlmPostRequest(prompt string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	var r string
+	err = json.Unmarshal(content, &r)
+	if err != nil {
+		return "", err
+	}
 
-	return string(content), nil
+	return r, nil
 }
