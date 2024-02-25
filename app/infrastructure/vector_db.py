@@ -1,13 +1,6 @@
-import random
-
 import chromadb
 from chromadb.config import Settings
-from loguru import logger
-from sqlalchemy.engine.create import create_engine
-from sqlalchemy.orm.session import sessionmaker
 from sqlmodel import Session
-
-from app.config import get_vector_db_uri
 
 db = chromadb.PersistentClient(path="./database", settings=Settings(anonymized_telemetry=False))
 
@@ -30,3 +23,9 @@ def retrieve_context_ids(embedding, session: Session) -> list:
         n_results=2,
     )
     return results["ids"][0]
+
+
+def retrieve_from_temp_collection(content_chunks: list[str], prompt: str, session: Session) -> str:
+    collection = db.create_collection(name="temp_collection")
+    collection.add(documents=content_chunks, ids=[str(i) for i in range(len(content_chunks))])
+    return "a"

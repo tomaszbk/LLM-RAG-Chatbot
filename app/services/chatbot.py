@@ -1,15 +1,12 @@
 from loguru import logger
-from sqlalchemy import text
-from sqlalchemy.orm import Session
 
 from app.infrastructure.document_db import retrieve_contexts
-from app.infrastructure.vector_db import collection, retrieve_context_ids
+from app.infrastructure.vector_db import retrieve_context_ids
 from app.services.conversational_model import get_conversational_answer
 from app.services.embedding_model import get_sentence_embedding
 
-prompt_with_context_template = """Answer only the following QUESTION based on the CONTEXT given.
-
-
+prompt_with_context_template = """You are a chatbot named kukebot. Answer the following QUESTION.
+If you dont know the answer, reply: "I don't know".
 CONTEXT:
 {context}
 
@@ -19,14 +16,7 @@ QUESTION:
 ANSWER:
 """
 
-prompt_without_context_template = """Answer only the following QUESTION.
-do not continue the conversation further.
-
-QUESTION:
-{question}
-
-ANSWER:
-"""
+prompt_without_context_template = prompt_with_context_template.replace("CONTEXT:\n{context}\n", "")
 
 
 def transform_embedding_to_str(embedding):
