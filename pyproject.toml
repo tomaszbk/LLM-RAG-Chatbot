@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-uvicorn = "^0.26.0"
+uvicorn = "0.26.0"
 torch = "^2.1.2"
 transformers = "^4.36.2"
 fastapi = "^0.109.0"
@@ -21,6 +21,7 @@ chromadb = "^0.4.22"
 sqlmodel = "^0.0.16"
 
 
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
@@ -28,12 +29,12 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 lint.select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # pyflakes
-    "C",   # flake8-comprehensions
-    "B",   # flake8-bugbear
-    "I",
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "C", # flake8-comprehensions
+    "B", # flake8-bugbear
+    # "I",
     "SIM",
     "UP",
 ]
@@ -44,9 +45,10 @@ line-length = 100
 lint.ignore = [
     "E501", # line too long, handled by format
     "B008", # do not perform function calls in argument defaults
-    "F401",
+    # "F401",
 ]
-fix = true
+
+fix = false
 show-fixes = true
 
 
