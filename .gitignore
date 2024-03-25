@@ -1,2 +1,6 @@
 *cache*
 *.pyc
+chainlit_front/.chainlit
+chainlit_front/.files
+.vscode
+.database

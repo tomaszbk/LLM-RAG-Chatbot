@@ -25,3 +25,9 @@ async def main(message: cl.Message):
 
     content = json.loads(response.text)
     await cl.Message(content).send()
+
+
+if __name__ == "__main__":
+    from chainlit.cli import run_chainlit
+
+    run_chainlit(__file__)

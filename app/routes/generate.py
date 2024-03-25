@@ -3,7 +3,8 @@ from loguru import logger
 
 from app.infrastructure.document_db import get_session
 from app.schemas import Prompt
-from app.services.chatbot import generate_conversational_answer
+from app.services.conversational_model import get_conversational_answer
+from app.services.rag import generate_conversational_rag_answer
 from app.services.splitter import split_pdf
 
 router = APIRouter()
@@ -12,8 +13,7 @@ router = APIRouter()
 @router.post("/submit-prompt-rag")
 def generate_rag_answer(prompt: Prompt, session=Depends(get_session)):
     logger.info("PROMPT:", prompt.prompt)
-    output = generate_conversational_answer(prompt.prompt, use_rag=True, session=session)
-    print(output)
+    output = generate_conversational_rag_answer(prompt.prompt, session=session)
     return output
 
 
@@ -24,10 +24,10 @@ async def generate_rag_answer_pdf(
     contents = await file.read()
 
     chunks = split_pdf(contents)
-    return generate_conversational_answer(prompt, use_rag=True, session=session)
+    return generate_conversational_rag_answer(prompt, session=session)
 
 
 @router.post("/submit-prompt")
 def generate_answer(prompt: Prompt, session=Depends(get_session)):
     logger.info("PROMPT:", prompt.prompt)
-    return generate_conversational_answer(prompt.prompt, use_rag=False, session=session)
+    return get_conversational_answer(prompt.prompt)

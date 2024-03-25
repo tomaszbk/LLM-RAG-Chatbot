@@ -4,7 +4,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from pypdf import PdfReader
 
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=350,  # 100 characters
+    chunk_size=500,  # 100 characters
     length_function=len,
 )
 
