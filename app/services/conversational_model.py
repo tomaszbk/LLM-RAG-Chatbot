@@ -23,7 +23,7 @@ tokenizer = AutoTokenizer.from_pretrained(
     trust_remote_code=True,
     use_fast=False,
 )
-generator = pipeline("text-generation", model=model, tokenizer=tokenizer, device=0)
+generator = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 
 def get_conversational_answer(prompt: str, context: str = None):

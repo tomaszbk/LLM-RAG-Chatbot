@@ -3,4 +3,5 @@
 chainlit_front/.chainlit
 chainlit_front/.files
 .vscode
-.database
+database
+model_exploration/database
