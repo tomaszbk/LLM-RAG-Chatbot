@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.post("/submit-prompt-rag")
 def generate_rag_answer(prompt: Prompt):
-    logger.info("PROMPT:", prompt.prompt)
+    logger.info(f"PROMPT: {prompt.prompt}")
 
     output = generate_conversational_rag_answer(collection, prompt.prompt)
     return output
@@ -19,6 +19,7 @@ def generate_rag_answer(prompt: Prompt):
 
 @router.post("/submit-prompt-rag-pdf")
 async def generate_rag_answer_pdf(prompt: str, file: UploadFile = File(...)):
+    logger.info(f"PROMPT: {prompt.prompt}")
     contents = await file.read()
 
     return generate_conversational_rag_answer(collection, prompt=prompt, file_content=contents)
@@ -26,5 +27,5 @@ async def generate_rag_answer_pdf(prompt: str, file: UploadFile = File(...)):
 
 @router.post("/submit-prompt")
 def generate_answer(prompt: Prompt):
-    logger.info("PROMPT:", prompt.prompt)
+    logger.info(f"PROMPT: {prompt.prompt}")
     return get_conversational_answer(prompt.prompt)

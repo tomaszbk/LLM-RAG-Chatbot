@@ -21,8 +21,7 @@ func main() {
 	votesOne = 0
 	votesTwo = 0
 	rankingMode = false
-	// token := os.Getenv("DISCORD_BOT_TOKEN")
-	token := "NzYzOTE5MzIxNjEyNDE5MTMz.Gze6CI.Fcgp47xMbnRhzD4Cf3oYV4Dnn5jvdX8cVSrKu0"
+	token := os.Getenv("DISCORD_BOT_TOKEN")
 	if token == "" {
 		fmt.Println("Bot token not provided. Please set the DISCORD_BOT_TOKEN environment variable.")
 		return
@@ -76,19 +75,23 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if len(message) < 9 {
 		return
 	} else {
-		if message[:9] == "!kukebot " {
-			if message[9:] == "ranking" {
+		if message[:4] == "!kb " {
+			if message[3:] == "ranking" {
 				rankingMode = true
 				s.ChannelMessageSend(m.ChannelID, "Ranking mode enabled")
 				go doRanking(s, m.ChannelID)
 			} else {
 				fmt.Println("Processing prompt")
-				croppedMessage := message[9:]
+				croppedMessage := fmt.Sprintf("soy %s, %s", m.Author.Username, message[4:])
 				promptAnswer, err := LlmPostRequest(croppedMessage)
 				if err != nil {
 					fmt.Println("Error processing prompt: ", err)
 				} else {
-					s.ChannelMessageSend(m.ChannelID, promptAnswer)
+					if promptAnswer == "I don't know" {
+						s.ChannelMessageSend(m.ChannelID, "https://tenor.com/view/cat-standing-fat-epic-gif-23115386")
+					} else {
+						s.ChannelMessageSend(m.ChannelID, promptAnswer)
+					}
 				}
 			}
 		}
@@ -110,7 +113,7 @@ func LlmPostRequest(prompt string) (string, error) {
 
 	// err = os.WriteFile("output.json", jsonData, 0644)
 
-	resp, err := http.Post("http://localhost:8000/submit-prompt-rag", "application/json", bytes.NewBuffer(jsonData))
+	resp, err := http.Post("http://localhost:8000/submit-prompt", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", err
 	}

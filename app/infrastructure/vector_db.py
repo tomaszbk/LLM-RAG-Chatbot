@@ -6,7 +6,6 @@ db = chromadb.PersistentClient(path="./database", settings=Settings(anonymized_t
 collection = db.get_or_create_collection(name="chatbot_data")
 
 
-# TODO upload to trello thresshold task
 def store_documents(collection, documents, embeddings, ids: list[str]):
     collection.add(
         embeddings=embeddings,
