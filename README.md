@@ -6,11 +6,5 @@ This is a simple chatbot that uses the RAG architecture to answer questions. Eve
 ## Made with
 
 - Python (Fastapi, Pytorch, Hugging face Transformers)
-- PostgreSQL
+- Chroma vector database
 - Docker
-
-
-
-    CharacterTextSplitter 
-    RecursiveCharacterTextSplitter
-    TokenTextSplitter

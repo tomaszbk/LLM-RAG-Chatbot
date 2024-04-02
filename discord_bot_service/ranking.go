@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -9,6 +10,10 @@ import (
 )
 
 func doRanking(s *discordgo.Session, ChannelID string) {
+	rankingMode = true
+	votesOne = 0
+	votesTwo = 0
+	s.ChannelMessageSend(ChannelID, "Ranking mode enabled")
 	arr := []int{9, 7, 6}
 	n := len(arr)
 
@@ -54,7 +59,7 @@ func merge(arr []int, leftStart, mid, rightEnd int, s *discordgo.Session, Channe
 	for i < leftSize && j < rightSize {
 		votesOne = 0
 		votesTwo = 0
-		s.ChannelMessageSend(ChannelID, "Which is better? "+strconv.Itoa(left[i])+" or "+strconv.Itoa(right[j])+"?")
+		s.ChannelMessageSend(ChannelID, fmt.Sprintf("Which is better? %d or %d?", left[i], right[j]))
 		time.Sleep(6 * time.Second)
 		if votesOne <= votesTwo {
 			arr[k] = left[i]

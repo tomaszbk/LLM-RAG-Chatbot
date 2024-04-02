@@ -18,8 +18,6 @@ var votesOne int
 var votesTwo int
 
 func main() {
-	votesOne = 0
-	votesTwo = 0
 	rankingMode = false
 	token := os.Getenv("DISCORD_BOT_TOKEN")
 	if token == "" {
@@ -33,7 +31,7 @@ func main() {
 		return
 	}
 
-	ds_bot.AddHandler(messageCreate)
+	ds_bot.AddHandler(OnMessageCreate)
 
 	ds_bot.Identify.Intents = discordgo.IntentsAllWithoutPrivileged
 
@@ -52,7 +50,7 @@ func main() {
 	ds_bot.Close()
 }
 
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// Ignore messages from the bot itself
 	if m.Author.ID == s.State.User.ID {
 		return
@@ -70,32 +68,29 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	fmt.Printf("[%s] (Channel: %s) %s: %s\n", m.GuildID, m.ChannelID, m.Author.Username, m.Content)
 	message := m.Content
-	fmt.Printf("Message: %s.\n", message)
 
-	if len(message) < 9 {
-		return
-	} else {
-		if message[:4] == "!kb " {
-			if message[3:] == "ranking" {
-				rankingMode = true
-				s.ChannelMessageSend(m.ChannelID, "Ranking mode enabled")
-				go doRanking(s, m.ChannelID)
-			} else {
-				fmt.Println("Processing prompt")
-				croppedMessage := fmt.Sprintf("soy %s, %s", m.Author.Username, message[4:])
-				promptAnswer, err := LlmPostRequest(croppedMessage)
-				if err != nil {
-					fmt.Println("Error processing prompt: ", err)
-				} else {
-					if promptAnswer == "I don't know" {
-						s.ChannelMessageSend(m.ChannelID, "https://tenor.com/view/cat-standing-fat-epic-gif-23115386")
-					} else {
-						s.ChannelMessageSend(m.ChannelID, promptAnswer)
-					}
-				}
-			}
+	if message[:4] == "!kb " {
+		if message[3:] == "ranking" {
+			go doRanking(s, m.ChannelID)
+		} else {
+			go GetLlmResponse(s, m, message[4:])
 		}
+	}
+}
 
+func GetLlmResponse(s *discordgo.Session, m *discordgo.MessageCreate, prompt string) {
+	s.ChannelMessageSend(m.ChannelID, "Processing prompt...")
+	fmt.Println("Processing prompt")
+	croppedMessage := fmt.Sprintf("soy %s, %s", m.Author.Username, prompt)
+	promptAnswer, err := LlmPostRequest(croppedMessage)
+	if err != nil {
+		fmt.Println("Error processing prompt: ", err)
+	} else {
+		if promptAnswer == "I don't know" {
+			s.ChannelMessageSend(m.ChannelID, "https://tenor.com/view/cat-standing-fat-epic-gif-23115386")
+		} else {
+			s.ChannelMessageSend(m.ChannelID, promptAnswer)
+		}
 	}
 }
 
@@ -110,8 +105,6 @@ func LlmPostRequest(prompt string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	// err = os.WriteFile("output.json", jsonData, 0644)
 
 	resp, err := http.Post("http://localhost:8000/submit-prompt", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
