@@ -5,3 +5,4 @@ chainlit_front/.files
 .vscode
 database
 model_exploration/database
+.env

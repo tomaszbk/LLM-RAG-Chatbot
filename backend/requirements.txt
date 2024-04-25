@@ -1,0 +1,8 @@
+fastapi
+chromadb
+loguru
+pypdf
+langchain
+pydantic
+pydantic_settings
+python-multipart

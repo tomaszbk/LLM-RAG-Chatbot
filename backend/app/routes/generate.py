@@ -1,10 +1,9 @@
-from fastapi import APIRouter, File, UploadFile
-from loguru import logger
-
 from app.infrastructure.vector_db import collection
 from app.schemas import Prompt
-from app.services.conversational_model import get_conversational_answer
+from app.services.llm_model import get_conversational_answer
 from app.services.rag import generate_conversational_rag_answer
+from fastapi import APIRouter, File, UploadFile
+from loguru import logger
 
 router = APIRouter()
 

@@ -1,9 +1,9 @@
 services:
 
-  llm-model:
-    image: llm-model
+  model-llama:
+    image: llama3
     build:
-      context: gguf_model
+      context: llama3
       dockerfile: Dockerfile
     ports:
       - 8007:8007
@@ -20,6 +20,25 @@ services:
     build:
       context: discord_bot_service
       dockerfile: Dockerfile
-    network_mode: host
     env_file:
       - discord_bot_service/.env
+    environment:
+      - LLM_BACKEND_HOST=fastapi-llm-service
+      - LLM_BACKEND_PORT=8000
+
+  fastapi-llm-service:
+    image: llm-service
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    environment:
+      - MODEL_HOST=model-llama
+      - MODEL_PORT=8007
+    develop:
+      watch:
+        - path: ./backend/app/
+          action: sync
+          target: /app/app
+    command: ["sh", "-c", "python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"]

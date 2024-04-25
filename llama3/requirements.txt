@@ -1,0 +1,5 @@
+fastapi
+llama-cpp-python
+uvicorn
+python-multipart
+sentence_transformers
