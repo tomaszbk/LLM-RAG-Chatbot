@@ -19,13 +19,13 @@ var votesTwo int
 
 func main() {
 	rankingMode = false
-	token := os.Getenv("DISCORD_BOT_TOKEN")
-	if token == "" {
+	loadEnv()
+	if AppConfig.DiscordBotToken == "" {
 		fmt.Println("Bot token not provided. Please set the DISCORD_BOT_TOKEN environment variable.")
 		return
 	}
 
-	ds_bot, err := discordgo.New("Bot " + token)
+	ds_bot, err := discordgo.New("Bot " + AppConfig.DiscordBotToken)
 	if err != nil {
 		fmt.Println("Error creating Discord session:", err)
 		return
@@ -69,6 +69,10 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	fmt.Printf("[%s] (Channel: %s) %s: %s\n", m.GuildID, m.ChannelID, m.Author.Username, m.Content)
 	message := m.Content
 
+	if len(message) < 4 {
+		return
+	}
+
 	if message[:4] == "!kb " {
 		if message[3:] == "ranking" {
 			go doRanking(s, m.ChannelID)
@@ -79,18 +83,14 @@ func OnMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func GetLlmResponse(s *discordgo.Session, m *discordgo.MessageCreate, prompt string) {
-	s.ChannelMessageSend(m.ChannelID, "Processing prompt...")
 	fmt.Println("Processing prompt")
 	croppedMessage := fmt.Sprintf("soy %s, %s", m.Author.Username, prompt)
 	promptAnswer, err := LlmPostRequest(croppedMessage)
 	if err != nil {
 		fmt.Println("Error processing prompt: ", err)
+		s.ChannelMessageSend(m.ChannelID, "Error...")
 	} else {
-		if promptAnswer == "I don't know" {
-			s.ChannelMessageSend(m.ChannelID, "https://tenor.com/view/cat-standing-fat-epic-gif-23115386")
-		} else {
-			s.ChannelMessageSend(m.ChannelID, promptAnswer)
-		}
+		s.ChannelMessageSend(m.ChannelID, promptAnswer)
 	}
 }
 
@@ -105,8 +105,8 @@ func LlmPostRequest(prompt string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	resp, err := http.Post("http://localhost:8000/submit-prompt", "application/json", bytes.NewBuffer(jsonData))
+	url := fmt.Sprintf("http://%s:%s/submit-prompt", AppConfig.LLMBackendHost, AppConfig.LLMBackendPort)
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", err
 	}
